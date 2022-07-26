@@ -1,7 +1,7 @@
 import  React,{Fragment} from 'react';
 import Navbar from './components/Navbar';
+import ListaComprobanteAfip from './components/ComprobantesAfip';
 import ProveedoresList from './components/ProveedoresList';
-import { TablaBasica } from './components/TablaBasica';
 // hooks son metodos
 
 
@@ -14,7 +14,7 @@ function App() {
           <div className='container'>
             <div className='row'>
 
-                <div className='col col-12'>
+                <div className='col col-10'>
                   <h2 style={{textAlign:'center'}}>Proveedores</h2>
                   <ProveedoresList />
                 </div>

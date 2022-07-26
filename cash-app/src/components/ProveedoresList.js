@@ -1,55 +1,61 @@
 import React,{useState, useEffect} from "react";
-
 const ProveedoresList =({getProveedores})=>{
-    const URL = "http://localhost:3030/proveedores?";
-    const [endpoint, setEndpoint] = useState("");
+    const [cuit, setCuit] = useState("");
+    const [razonSocial, setRazonSocial] = useState("");
+    const [id, setId]= useState("");
+    const [order, setOrder]= useState("1");
+    const [orientacion, setOrientacion]= useState("ASC");
+
+    const URL = `http://localhost:3030/proveedores?razonsocial=${razonSocial}&id=${id}&cuit=${cuit}&orderby=${order}&orientacion=${orientacion}`;
     const [proveedor, setProveedor] = useState([]);
     const [currentPage, setCurrentPage] = useState([+0]);
     const [searchID , setSearchId] =useState("");
 
+    const cambiarOrientador=(num)=>{
+        console.log(num)
+        setOrder(num);
+    }
+
+    const cambiarOrientacion=()=>{
+        if(orientacion==="ASC")
+            setOrientacion("DESC")
+        else
+        {
+            setOrientacion("ASC");
+        }
+    }
     //ni bien arranca la app se ejecuta el useEffect
     useEffect(()=>{
         const getProveedores =()=>{
-            fetch(URL + endpoint)
-            .then(console.log("Imprimiendo: "+URL+endpoint))
+            fetch(URL)
             .then(res=>res.json())
-            .then(res=>setProveedor(res))            
+            .then(res=>setProveedor(res))
+            .then(res=> console.log(URL))            
         }
         getProveedores()
-        },[endpoint])
+        },[URL])    
     
-        
+
     const proveedoresFiltrados = () =>{
-        console.log(`El Search es: ${searchID.length}`)
-        console.log(searchID.length === 0)
         if(searchID.length === 0)
-            return proveedor.slice(currentPage,currentPage+100);
-        
-        const filtrada = proveedor.map((p)=>{
-            console.log(typeof p);
-        })
-        console.log(filtrada);
-        return proveedor.slice(currentPage,currentPage+100);
+        {
+            return proveedor.slice(currentPage,currentPage+50);        
+        }
+        // return proveedor.slice(currentPage,currentPage+100);
         
     }
 
     const avanzarPagina = ()=>{
-        console.log(proveedor.length);
-        console.log(currentPage);
-        if(currentPage+100<proveedor.length)
-            setCurrentPage(+currentPage + 100)
-    }
+        if(currentPage+50<proveedor.length)
+            setCurrentPage(+currentPage + 50)
+    }   
 
     const retrocederPagina =()=>{
         if(+currentPage>0)
-            setCurrentPage(+currentPage-100)
+            setCurrentPage(+currentPage-50)
     }
 
-    const OnSearchChange =(event)=>{
-        setCurrentPage(0);
-        console.log(event.target.value);
-        setSearchId(event.target.value);
-    }
+
     return(        
         <div>
             <div>
@@ -65,15 +71,30 @@ const ProveedoresList =({getProveedores})=>{
              >
                 Siguiente</button>      
             </div>
-            <table className="table">
+            <table className="table tablaProveedores table-striped">
                     <thead>
                         <tr>
-                            <th>Id</th>
-                            <th>Razon Social</th>
-                            <th>Descripcion</th>
-                            <th>Condicion</th>
-                            <th>Cuit</th>
-
+                            <th > <button onClick={e=>{
+                                cambiarOrientacion()
+                                cambiarOrientador(1)
+                            }} className="btn m-2">#</button>
+                            </th>
+                            <th><button onClick={e=>{
+                                cambiarOrientacion()
+                                cambiarOrientador(2)
+                            }} className="btn m-2">Razon social</button></th>
+                            <th><button onClick={e=>{
+                                cambiarOrientacion()
+                                cambiarOrientador(3)
+                            }} className="btn m-2">Descripcion</button></th>
+                            <th><button onClick={e=>{
+                                cambiarOrientacion()
+                                cambiarOrientador(4)
+                            }} className="btn m-2">Condicion</button></th>
+                            <th><button onClick={e=>{
+                                cambiarOrientacion()
+                                cambiarOrientador(5)
+                            }} className="btn m-2">CUIT</button></th>                            
                         </tr>
                     </thead>
                     <tbody>
@@ -82,9 +103,9 @@ const ProveedoresList =({getProveedores})=>{
                                 placeholder="BUSCAR ID"  
                                 name= "id"  
                                 type="text" 
-                                className="form-control"
-                                value={searchID}
-                                onChange={OnSearchChange}
+                                className="form-control"                                
+                                onChange={e=>setId(e.target.value)}
+                                
                                 
                                 />
                             </th>
@@ -93,6 +114,7 @@ const ProveedoresList =({getProveedores})=>{
                                 name="razonSocial"  
                                 type="text" 
                                 className="form-control"
+                                onChange={e=>setRazonSocial(e.target.value)}
                                 />
                                 </th>
                             <th><input 
@@ -100,6 +122,7 @@ const ProveedoresList =({getProveedores})=>{
                                 name="dscripcion"  
                                 type="text" 
                                 className="form-control"
+                                
                                 /></th>
                             <th><input 
                                 placeholder="BUSCAR CONDICION" 
@@ -112,17 +135,25 @@ const ProveedoresList =({getProveedores})=>{
                                 name="cuit"  
                                 type="text" 
                                 className="form-control"
+                                onChange={e=>setCuit(e.target.value)}
                                 /></th>
+                            
+                            
                         </tr>
-                        {proveedoresFiltrados().map(element=>
+                        {
+                        proveedoresFiltrados().map(element=>                        
                         <tr key={element.id}>
                             <th>{element.id}</th>
-                            <th>{element.razonSocial}</th>
+                            <th>{element.razonSocial}</th>   
                             <th>{element.descripcion}</th>
-                            <th>{element.condicion}</th>
-                            <th>{element.cuit}</th>
+                            <th>{element.condicion}</th> 
+                            <th>{element.cuit}</th>   
+                            <th>
+                                <button className="btn btn-primary" id="">Modificar </button>
+                            </th>
                         </tr>
-                        )}                
+                        )
+                        }                
                     </tbody>
                 </table>
         </div>
